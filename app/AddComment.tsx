@@ -1,54 +1,54 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useMutation, useQueryClient } from "react-query"
-import axios, { AxiosError } from "axios"
-import toast from "react-hot-toast"
-import { PostType } from "./types/Post"
+import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
+import axios, { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { drivingSessionType } from "./types/drivingSession";
 
 type Comment = {
-  postId?: string
-  title: string
-}
+  postId?: string;
+  title: string;
+};
 type PostProps = {
-  id?: string
-}
+  id?: string;
+};
 export default function AddComment({ id }: PostProps) {
-  let commentToastId: string
-  console.log(id)
-  const [title, setTitle] = useState("")
-  const [isDisabled, setIsDisabled] = useState(false)
+  let commentToastId: string;
+  console.log(id);
+  const [title, setTitle] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { mutate } = useMutation(
     async (data: Comment) => {
-      return axios.post("/api/posts/addComment", { data })
+      return axios.post("/api/posts/addComment", { data });
     },
     {
       onSuccess: (data) => {
-        queryClient.invalidateQueries(["detail-post"])
-        setTitle("")
-        setIsDisabled(false)
-        toast.success("Added your comment", { id: commentToastId })
+        queryClient.invalidateQueries(["detail-post"]);
+        setTitle("");
+        setIsDisabled(false);
+        toast.success("Added your comment", { id: commentToastId });
       },
       onError: (error) => {
-        console.log(error)
-        setIsDisabled(false)
+        console.log(error);
+        setIsDisabled(false);
         if (error instanceof AxiosError) {
-          toast.error(error?.response?.data.message, { id: commentToastId })
+          toast.error(error?.response?.data.message, { id: commentToastId });
         }
       },
     }
-  )
+  );
 
   const submitPost = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsDisabled(true)
+    e.preventDefault();
+    setIsDisabled(true);
     commentToastId = toast.loading("Adding your comment", {
       id: commentToastId,
-    })
-    mutate({ title, postId: id })
-  }
+    });
+    mutate({ title, postId: id });
+  };
   return (
     <form onSubmit={submitPost} className="my-8">
       <h3 className="text-xl">Add a comment</h3>
@@ -77,5 +77,5 @@ export default function AddComment({ id }: PostProps) {
         >{`${title.length}/300`}</p>
       </div>
     </form>
-  )
+  );
 }

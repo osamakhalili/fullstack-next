@@ -1,55 +1,44 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { useState } from "react"
-import Toggle from "./Toggle"
-import { useMutation, useQueryClient } from "react-query"
-import toast from "react-hot-toast"
-import axios from "axios"
-import { motion } from "framer-motion"
+import Image from "next/image";
+import { useState } from "react";
+import Toggle from "./Toggle";
+import { useMutation, useQueryClient } from "react-query";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 type EditProps = {
-  id: string
-  avatar: string
-  name: string
-  title: string
-  comments?: {
-    id: string
-    postId: string
-    userId: string
-  }[]
-}
+  id: string;
+  avatar: string;
+  name: string;
+  title: string;
+};
 
-export default function EditPost({
-  avatar,
-  name,
-  title,
-  comments,
-  id,
-}: EditProps) {
-  const [toggle, setToggle] = useState(false)
-  const queryClient = useQueryClient()
-  let deleteToastID: string
+export default function EditPost({ avatar, name, title, id }: EditProps) {
+  const [toggle, setToggle] = useState(false);
+  const queryClient = useQueryClient();
+  let deleteToastID: string;
 
   const { mutate } = useMutation(
     async (id: string) =>
       await axios.delete("/api/posts/deletePost", { data: id }),
     {
       onError: (error) => {
-        console.log(error)
+        console.log(error);
       },
       onSuccess: (data) => {
-        console.log(data)
-        queryClient.invalidateQueries("getAuthPosts")
-        toast.success("Post has been deleted.", { id: deleteToastID })
+        console.log(data);
+        queryClient.invalidateQueries("getAuthPosts");
+        toast.success("Post has been deleted.", { id: deleteToastID });
       },
     }
-  )
+  );
 
   const deletePost = () => {
-    deleteToastID = toast.loading("Deleting your post.", { id: deleteToastID })
-    mutate(id)
-  }
+    deleteToastID = toast.loading("Deleting your post.", { id: deleteToastID });
+    mutate(id);
+  };
 
   return (
     <>
@@ -66,22 +55,17 @@ export default function EditPost({
         <div className="my-8 ">
           <p className="break-all">{title}</p>
         </div>
-        <div className="flex items-center gap-4 ">
-          <p className=" text-sm font-bold text-gray-700">
-            {comments?.length} Comments
-          </p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setToggle(true)
-            }}
-            className="text-sm font-bold text-red-500"
-          >
-            Delete
-          </button>
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setToggle(true);
+          }}
+          className="text-sm font-bold text-red-500"
+        >
+          Delete
+        </button>
       </motion.div>
       {toggle && <Toggle deletePost={deletePost} setToggle={setToggle} />}
     </>
-  )
+  );
 }

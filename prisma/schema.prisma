@@ -11,6 +11,32 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+model Student {
+  id              String           @id @default(cuid())
+  name            String?
+  personnr        String           @unique
+  paymentMethod   String?
+  ispaid          Boolean?         @default(false)
+  createdAt       DateTime?        @default(now())
+  updatedAt       DateTime?        @updatedAt
+  drivingSessions DrivingSession[]
+}
+
+model DrivingSession {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id])
+  teacher      String
+  carType      String
+  date         DateTime
+  startTime    DateTime
+  endTime      DateTime
+  description  String?
+  sessionCount Int
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -19,39 +45,6 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  posts         Post[]
-  comments      Comment[]
-  hearts        Heart[]
-}
-
-model Post {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  title     String
-  published Boolean   @default(false)
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  comments  Comment[]
-  hearts    Heart[]
-}
-
-model Heart {
-  id     String @id @default(cuid())
-  postId String
-  userId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
-  title     String
-  postId    String
-  userId    String
-  createdAt DateTime @default(now())
 }
 
 model Account {

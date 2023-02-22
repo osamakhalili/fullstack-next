@@ -5,20 +5,20 @@ import { authOptions } from "../auth/[...nextauth]"
 export default async function handler(req, res) {
   const session = await unstable_getServerSession(req, res, authOptions)
   if (!session) {
-    return res.status(401).json({ message: "Please signin to create a post." })
+    return res.status(401).json({ message: "Please signin to create a drivingSessionId." })
   }
   if (req.method === "DELETE") {
-    const postId = req.body
+    const drivingSessionId = req.body
     try {
-      const result = await prisma.post.delete({
+      const result = await prisma.DrivingSession.delete({
         where: {
-          id: postId,
+          id: drivingSessionId,
         },
       })
 
       res.status(200).json(result)
     } catch (err) {
-      res.status(403).json({ err: "Error has occured while deleting a post" })
+      res.status(403).json({ err: "Error has occured while deleting a drivingSession" })
     }
   }
 }
